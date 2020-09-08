@@ -46,6 +46,9 @@ def get_dict_coords(dictionary):
     max_y = max(y)
     return min_x, max_x, min_y, max_y
 
+def get_orthogonal_neighbours(position):
+    (x, y) = position
+    return [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
 
 def get_new_location(position, direction):
     x, y = position
