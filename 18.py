@@ -4,88 +4,105 @@ from queue import SimpleQueue
 from heapq import heappop, heappush
 
 
-def get_details(start_pos):
+def get_details(start_pos, keys, doors, walkable):
 
     print("Mapping from", start_pos)
-    # queue = [{"position": (int, int), "distance": int, "doors_seen": [string]}]
 
     q = SimpleQueue()
     seen = set()
-    distances = dict()
-    keys_needed = dict()
+    details = dict()
 
     q.put({"position": start_pos, "distance": 0, "keys_needed": set()})
+    # queue = [{"position": (int, int), "distance": int, "keys_needed": {string}}]
 
     while not q.empty():
         item = q.get()
         q_pos = item["position"]
-        if q_pos not in seen:
-            q_d = item["distance"]
-            q_keys = item["keys_needed"]
-            seen.add(q_pos)
-            if q_pos in keys.keys():
-                distances[q_pos] = q_d
-                keys_needed[q_pos] = q_keys
-            if q_pos in doors.keys():
-                q_keys.add(doors[q_pos].lower())
-            for n_pos in get_orthogonal_neighbours(q_pos):
-                if n_pos in walkable and n_pos not in seen:
-                    q.put(
-                        {"position": n_pos, "distance": q_d + 1, "keys_needed": q_keys.copy()})
+        if q_pos in seen:
+            continue
+        seen.add(q_pos)
+        q_distance = item["distance"]
+        q_keys = item["keys_needed"]
+        if q_pos in keys.keys():
+            details[q_pos] = {"distance": q_distance, "keys_needed": q_keys}
+        if q_pos in doors.keys():
+            q_keys.add(doors[q_pos].lower())
+        for n_pos in get_orthogonal_neighbours(q_pos):
+            if n_pos in walkable - seen:
+                q.put(
+                    {"position": n_pos, "distance": q_distance + 1, "keys_needed": q_keys.copy()})
 
-    return {"distances": distances, "keys_needed": keys_needed}
-
-
-def get_reachable_keys(position, keys_collected):
-    return [key_position for key_position in maze_details[position]["distances"].keys() 
-        if keys[key_position] not in keys_collected 
-        and maze_details[position]["keys_needed"][key_position].issubset(keys_collected)]
+    return details
 
 
-def part1():
-    q = [(0, initial_pos, frozenset())]
+def get_reachable_keys(positions, keys_collected, keys, vault_details):
+    return [[key_position for key_position in vault_details[position].keys()
+             if keys[key_position] not in keys_collected
+             and vault_details[position][key_position]["keys_needed"].issubset(keys_collected)]
+            for position in positions]
+
+
+def get_shortest_route(keys, doors, walkable, initial_positions, vault_details):
+    q = [(0, initial_positions, set())]
     seen = set()
 
     while q:
         d, pos, keys_collected = heappop(q)
-        print(d, pos, keys_collected)
         if len(keys_collected) == len(keys.keys()):
             return(d)
-        if not (pos, keys_collected) in seen:
-            seen.add((pos, keys_collected))
-            for key_position in get_reachable_keys(pos, keys_collected):
-                heappush(q, (d + maze_details[pos]["distances"][key_position],
-                             key_position, keys_collected.union([keys[key_position]])))
+        if (frozenset(pos), frozenset(keys_collected)) not in seen:
+            print(d, pos, keys_collected)
+            seen.add((frozenset(pos), frozenset(keys_collected)))
+            reachable_keys = get_reachable_keys(
+                pos, keys_collected, keys, vault_details)
+            for bot, key_positions in enumerate(reachable_keys):
+                for key_position in key_positions:
+                    n_pos = pos.copy()
+                    n_pos[bot] = key_position
+                    heappush(q, (d + vault_details[pos[bot]][n_pos[bot]]["distance"],
+                                 n_pos, keys_collected.union([keys[key_position]])))
+
+
+def part1():
+
+    maze = get_input("18")
+    keys = {(x, y): maze[y][x] for y, _ in enumerate(maze)
+            for x, _ in enumerate(maze[0]) if maze[y][x].islower()}
+    doors = {(x, y): maze[y][x] for y, _ in enumerate(maze)
+             for x, _ in enumerate(maze[0]) if maze[y][x].isupper()}
+    walkable = {(x, y) for y, _ in enumerate(maze)
+                for x, _ in enumerate(maze[0]) if maze[y][x] != '#'}
+    initial_positions = [(x, y) for y, _ in enumerate(maze)
+                         for x, _ in enumerate(maze[0]) if maze[y][x] == '@']
+
+    points_of_interest = list(keys.keys()) + initial_positions
+    vault_details = {position: get_details(
+        position, keys, doors, walkable) for position in points_of_interest}
+    return get_shortest_route(keys, doors, walkable, initial_positions, vault_details)
 
 
 def part2():
-    return 0
+
+    maze = get_input("18.2")
+    keys = {(x, y): maze[y][x] for y, _ in enumerate(maze)
+            for x, _ in enumerate(maze[0]) if maze[y][x].islower()}
+    doors = {(x, y): maze[y][x] for y, _ in enumerate(maze)
+             for x, _ in enumerate(maze[0]) if maze[y][x].isupper()}
+    walkable = {(x, y) for y, _ in enumerate(maze)
+                for x, _ in enumerate(maze[0]) if maze[y][x] != '#'}
+    initial_positions = [(x, y) for y, _ in enumerate(maze)
+                         for x, _ in enumerate(maze[0]) if maze[y][x] == '@']
+
+    points_of_interest = list(keys.keys()) + initial_positions
+    vault_details = {position: get_details(
+        position, keys, doors, walkable) for position in points_of_interest}
+    return get_shortest_route(keys, doors, walkable, initial_positions, vault_details)
 
 
 if __name__ == "__main__":
 
     part1_correct = 3962
-    part2_correct = None
+    part2_correct = 1844 
 
-    counter = []
-
-    maze = get_input("18")
-    keys = {(x, y): maze[y][x] for y in range(len(maze))
-            for x in range(len(maze[0])) if maze[y][x].islower()}
-    doors = {(x, y): maze[y][x] for y in range(len(maze))
-             for x in range(len(maze[0])) if maze[y][x].isupper()}
-    walkable = [(x, y) for y in range(len(maze))
-                for x in range(len(maze[0])) if maze[y][x] != '#']
-
-    initial_pos = [(x, y) for y in range(len(maze))
-                   for x in range(len(maze[0])) if maze[y][x] == '@'][0]
-
-    # List of all points of interest in maze
-    start_points = list(keys.keys())
-    start_points.append(initial_pos)
-
-    maze_details = {start_pos: get_details(
-        start_pos) for start_pos in start_points}
-
-    print_answer(1, part1(), part1_correct)
+    #print_answer(1, part1(), part1_correct)
     print_answer(2, part2(), part2_correct)

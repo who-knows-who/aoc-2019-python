@@ -18,7 +18,8 @@ def print_answer(part, answer, expected=None):
     if answer == expected:
         print("Part " + str(part) + " CORRECT: " + str(answer))
     elif expected is not None:
-        print("Part " + str(part) + " INCORRECT: expected " + str(expected) + ", got " + str(answer))
+        print("Part " + str(part) + " INCORRECT: expected " +
+              str(expected) + ", got " + str(answer))
     else:
         print("Part " + str(part) + ": " + str(answer))
 
@@ -46,9 +47,12 @@ def get_dict_coords(dictionary):
     max_y = max(y)
     return min_x, max_x, min_y, max_y
 
+
 def get_orthogonal_neighbours(position):
-    (x, y) = position
-    return [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
+
+    x, y = position    
+    modifiers = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    return [(x + mx, y + my) for mx, my in modifiers]
 
 def get_new_location(position, direction):
     x, y = position
