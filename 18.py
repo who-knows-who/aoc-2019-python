@@ -6,8 +6,6 @@ from heapq import heappop, heappush
 
 def get_details(start_pos, keys, doors, walkable):
 
-    print("Mapping from", start_pos)
-
     q = SimpleQueue()
     seen = set()
     details = dict()
@@ -35,7 +33,7 @@ def get_details(start_pos, keys, doors, walkable):
     return details
 
 
-def get_reachable_keys(positions, keys_collected, keys, vault_details):
+def get_reachable_keys(positions, keys_collected, vault_details):
     return [[key_position for key_position in vault_details[position].keys()
              if keys[key_position] not in keys_collected
              and vault_details[position][key_position]["keys_needed"].issubset(keys_collected)]
@@ -43,6 +41,7 @@ def get_reachable_keys(positions, keys_collected, keys, vault_details):
 
 
 def get_shortest_route(keys, doors, walkable, initial_positions, vault_details):
+
     q = [(0, initial_positions, set())]
     seen = set()
 
@@ -51,10 +50,9 @@ def get_shortest_route(keys, doors, walkable, initial_positions, vault_details):
         if len(keys_collected) == len(keys.keys()):
             return(d)
         if (frozenset(pos), frozenset(keys_collected)) not in seen:
-            print(d, pos, keys_collected)
             seen.add((frozenset(pos), frozenset(keys_collected)))
             reachable_keys = get_reachable_keys(
-                pos, keys_collected, keys, vault_details)
+                pos, keys_collected, vault_details)
             for bot, key_positions in enumerate(reachable_keys):
                 for key_position in key_positions:
                     n_pos = pos.copy()
@@ -65,6 +63,35 @@ def get_shortest_route(keys, doors, walkable, initial_positions, vault_details):
 
 def part1():
 
+    points_of_interest = list(keys.keys()) + initial_positions
+    vault_details = {position: get_details(
+        position, keys, doors, walkable) for position in points_of_interest}
+    return get_shortest_route(keys, doors, walkable, initial_positions, vault_details)
+
+
+def part2():
+    
+    x, y = initial_positions[0]
+    walls_modifiers = [(0, 0), (0, 1), (1, 0), (0, -1), (-1, 0)]
+    initial_modifiers = [(-1, -1),(1, -1),   (-1, 1),(1, 1)]
+
+    new_walkable = walkable - {(x + nx, y + ny) for nx, ny in walls_modifiers}
+    new_initial = [(x + nx, y + ny) for nx, ny in initial_modifiers]
+
+    points_of_interest = list(keys.keys()) + new_initial
+
+    print("Mapping vault...")
+    vault_details = {position: get_details(
+        position, keys, doors, new_walkable) for position in points_of_interest}
+    print("Finding shortest route...")
+    return get_shortest_route(keys, doors, new_walkable, new_initial, vault_details)
+
+
+if __name__ == "__main__":
+
+    part1_correct = 3962
+    part2_correct = 1844
+
     maze = get_input("18")
     keys = {(x, y): maze[y][x] for y, _ in enumerate(maze)
             for x, _ in enumerate(maze[0]) if maze[y][x].islower()}
@@ -74,35 +101,6 @@ def part1():
                 for x, _ in enumerate(maze[0]) if maze[y][x] != '#'}
     initial_positions = [(x, y) for y, _ in enumerate(maze)
                          for x, _ in enumerate(maze[0]) if maze[y][x] == '@']
-
-    points_of_interest = list(keys.keys()) + initial_positions
-    vault_details = {position: get_details(
-        position, keys, doors, walkable) for position in points_of_interest}
-    return get_shortest_route(keys, doors, walkable, initial_positions, vault_details)
-
-
-def part2():
-
-    maze = get_input("18.2")
-    keys = {(x, y): maze[y][x] for y, _ in enumerate(maze)
-            for x, _ in enumerate(maze[0]) if maze[y][x].islower()}
-    doors = {(x, y): maze[y][x] for y, _ in enumerate(maze)
-             for x, _ in enumerate(maze[0]) if maze[y][x].isupper()}
-    walkable = {(x, y) for y, _ in enumerate(maze)
-                for x, _ in enumerate(maze[0]) if maze[y][x] != '#'}
-    initial_positions = [(x, y) for y, _ in enumerate(maze)
-                         for x, _ in enumerate(maze[0]) if maze[y][x] == '@']
-
-    points_of_interest = list(keys.keys()) + initial_positions
-    vault_details = {position: get_details(
-        position, keys, doors, walkable) for position in points_of_interest}
-    return get_shortest_route(keys, doors, walkable, initial_positions, vault_details)
-
-
-if __name__ == "__main__":
-
-    part1_correct = 3962
-    part2_correct = 1844 
 
     #print_answer(1, part1(), part1_correct)
     print_answer(2, part2(), part2_correct)
