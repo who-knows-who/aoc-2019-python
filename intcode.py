@@ -4,6 +4,7 @@ from collections import defaultdict
 
 class Program:
     def __init__(self, day):
+        self.day = day
         self.program_initial = make_program(get_input(day, split=True))
         self.program = self.program_initial.copy()
         self.ip = 0
@@ -31,6 +32,15 @@ class Program:
     def restart_program(self, input_buffer=None):
         self.reset_program()
         self.run_program(input_buffer)
+
+    def copy(self):
+        copy = Program(self.day)
+        copy.program = self.program.copy()
+        copy.ip = self.ip
+        copy.rb = self.rb
+        copy.output_buffer = self.output_buffer.copy()
+        copy.finsihed = self.finished
+        return copy
 
 
 def make_program(program_list):

@@ -50,9 +50,10 @@ def get_dict_coords(dictionary):
 
 def get_orthogonal_neighbours(position):
 
-    x, y = position    
+    x, y = position
     modifiers = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     return [(x + mx, y + my) for mx, my in modifiers]
+
 
 def get_new_location(position, direction):
     x, y = position
