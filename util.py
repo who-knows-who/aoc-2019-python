@@ -1,13 +1,28 @@
 from re import findall
 
 
-def get_input(name, strip=True, split=False):
-    with open("input/" + name) as file:
+def get_input(day, strip=True, split=False, test=False):
+    
+    # if day/test provided as int, convert to 2 char string
+    if type(day) == int:
+        day = str(day).zfill(2)
+    if type(test) == int:
+        test = str(test).zfill(2)
+    
+    # open input file
+    if test:
+        filename = "input/test/" + day + "-" + test
+    else:
+        filename = "input/" + day
+    with open(filename) as file:
         data = file.readlines()
+    
+    # process input if specified
     if strip:
         data = [x.strip() for x in data]
     if split:
         data = [x.split(',') for x in data]
+    
     if len(data) == 1:
         return data[0]
     return data
