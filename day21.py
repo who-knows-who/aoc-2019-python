@@ -12,7 +12,7 @@ def part1():
     ascii_instructions = [[ord(c) for c in instruction] for instruction in instructions]
     instruction_counter = 0
     while not program.finished:
-        program.run_program(ascii_instructions[instruction_counter])
+        program.run(ascii_instructions[instruction_counter])
         instruction_counter += 1
         print_ascii(program.output_buffer)
 
@@ -20,7 +20,7 @@ def part1():
 
 
 def part2():
-    program.reset_program()
+    program.reset()
     instructions = ["",
                     "NOT C J\n",
                     "AND D J\n",
@@ -43,7 +43,7 @@ def part2():
     ascii_instructions = [[ord(c) for c in instruction] for instruction in instructions]
     instruction_counter = 0
     while not program.finished:
-        program.run_program(ascii_instructions[instruction_counter])
+        program.run(ascii_instructions[instruction_counter])
         instruction_counter += 1
         print_ascii(program.output_buffer)
 

@@ -4,7 +4,7 @@ from intcode import Program
 
 def part1():
     program = Program("17")
-    program.run_program()
+    program.run()
 
     x, y = (0, 0)
     scaffold = []
@@ -36,7 +36,7 @@ def part2():
     input_buffer = []
     [input_buffer.extend(ord(c) for c in routine) for routine in [main, a, b, c, camera]]
 
-    program.run_program(input_buffer)
+    program.run(input_buffer)
     return program.output_buffer[-1]
 
 

@@ -6,18 +6,18 @@ def try_y(y):
 
     box_size = 100
     x = int(0.75 * y)
-    program.restart_program([x, y])
+    program.restart([x, y])
 
     # Find first x coordinate in tractor beam
     while program.output_buffer[0] == 0:
         x += 1
-        program.restart_program([x, y])
+        program.restart([x, y])
     x_min = x
 
     # Find last x coordinate in tractor beam
     while program.output_buffer[0] == 1:
         x += 1
-        program.restart_program([x, y])
+        program.restart([x, y])
     x_max = x - 1
 
     # If too narrow for box return -1
@@ -25,12 +25,12 @@ def try_y(y):
         return -1, None
 
     # If beam shorter than box (from furthest right x) return -1
-    program.restart_program([x_max - (box_size-1), y + (box_size-1)])
+    program.restart([x_max - (box_size-1), y + (box_size-1)])
     if program.output_buffer[0] == 0:
         return -1, None
 
     # If beam taller than box (from furthest right x) return 1
-    program.restart_program([x_max - (box_size-1), y + box_size])
+    program.restart([x_max - (box_size-1), y + box_size])
     if program.output_buffer[0] == 1:
         return 1, None
 
@@ -43,8 +43,8 @@ def part1():
     count = 0
     for y in range(50):
         for x in range(50):
-            program.reset_program()
-            program.run_program([x, y])
+            program.reset()
+            program.run([x, y])
             if program.output_buffer[0] == 1:
 
                 count += 1

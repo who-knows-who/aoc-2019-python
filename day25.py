@@ -39,7 +39,7 @@ def part1(program):
     while not program.finished:
 
         # Run program with the user input
-        program.run_program(user_input)
+        program.run(user_input)
         print_ascii(program.output_buffer)
 
         # Loop getting input until machine command given
@@ -77,7 +77,7 @@ def part1(program):
             # Drop all items
             if u_input == "drop *":
                 for item in items:
-                    program.run_program([ord(c)
+                    program.run([ord(c)
                                          for c in ("drop " + item + "\n")])
                     print_ascii(program.output_buffer)
                 continue
@@ -85,7 +85,7 @@ def part1(program):
             # Run route found
             if u_input == "run route":
                 for instruction in route:
-                    program.run_program([ord(c)
+                    program.run([ord(c)
                                          for c in (instruction + "\n")])
                     print_ascii(program.output_buffer)
                 continue

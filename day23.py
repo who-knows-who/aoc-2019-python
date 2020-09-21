@@ -4,7 +4,7 @@ from intcode import Program
 
 def start_computer(address):
     computer = Program("23")
-    computer.run_program([address])
+    computer.run([address])
     return computer
 
 
@@ -23,7 +23,7 @@ def part1():
                 input_buffer = messages[computers.index(computer)].pop(0)
             else:
                 input_buffer = [-1]
-            computer.run_program(input_buffer)
+            computer.run(input_buffer)
 
 
 def part2():
@@ -48,7 +48,7 @@ def part2():
                 input_buffer = messages[computers.index(computer)].pop(0)
             else:
                 input_buffer = [-1]
-            computer.run_program(input_buffer)
+            computer.run(input_buffer)
         if idle and nat_message is not None:
             if nat_message[1] == last_nat_y:
                 return last_nat_y

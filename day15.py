@@ -60,7 +60,7 @@ def map_area():
     for _ in range(10000):
         direction = get_direction(position, area_map, visited)
         new_position = get_new_location(position, direction)
-        game.run_program([direction])
+        game.run([direction])
 
         if game.output_buffer[0] == 0:
             area_map[new_position] = "#"

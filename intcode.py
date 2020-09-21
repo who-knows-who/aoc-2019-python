@@ -12,7 +12,7 @@ class Program:
         self.output_buffer = []
         self.finished = False
 
-    def run_program(self, input_buffer=None):
+    def run(self, input_buffer=None):
         if input_buffer is None:
             input_buffer = []
         self.finished, self.output_buffer, self.program, self.ip, self.rb = execute_intcode(
@@ -22,16 +22,16 @@ class Program:
             input_buffer
         )
 
-    def reset_program(self):
+    def reset(self):
         self.program = self.program_initial.copy()
         self.ip = 0
         self.rb = 0
         self.output_buffer = []
         self.finished = False
 
-    def restart_program(self, input_buffer=None):
-        self.reset_program()
-        self.run_program(input_buffer)
+    def restart(self, input_buffer=None):
+        self.reset()
+        self.run(input_buffer)
 
     def copy(self):
         copy = Program(self.day)

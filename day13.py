@@ -17,15 +17,15 @@ def get_joystick():
 
 
 def part1():
-    program.run_program()
+    program.run()
     return program.output_buffer[2::3].count(2)
 
 
 def part2():
-    program.reset_program()
+    program.reset()
     program.program[0] = 2
     while not program.finished:
-        program.run_program([get_joystick()])
+        program.run([get_joystick()])
 
     return [program.output_buffer[i+2]
             for i in range(0, len(program.output_buffer), 3)
