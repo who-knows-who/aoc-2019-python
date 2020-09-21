@@ -1,4 +1,4 @@
-from util import get_input, print_answer
+from util import print_answer
 from intcode import Program
 
 
