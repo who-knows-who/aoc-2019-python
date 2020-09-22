@@ -54,8 +54,8 @@ def lcm(x, y):
 
 
 def get_dict_coords(dictionary):
-    x = [location[0] for location in dictionary.keys()]
-    y = [location[1] for location in dictionary.keys()]
+    x = [location[0] for location in dictionary]
+    y = [location[1] for location in dictionary]
     min_x = min(x)
     max_x = max(x)
     min_y = min(y)
